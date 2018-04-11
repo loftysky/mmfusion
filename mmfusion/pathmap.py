@@ -27,7 +27,7 @@ def fix_main():
     new_source = re.sub(r'"([^"]*)"', sub, old_source)
 
     if old_source == new_source:
-        print 'No changes.'
+        print('No changes.')
         return
 
     if args.backup:
