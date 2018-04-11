@@ -1,4 +1,4 @@
-from future import print_function
+from __future__ import print_function
 
 import argparse
 import os
@@ -6,7 +6,7 @@ import re
 import sys
 
 
-def render_main():
+def submit_main():
 
     parser = argparse.ArgumentParser()
     parser.add_argument('-n', '--name')
@@ -18,7 +18,12 @@ def render_main():
 
     if args.start is None and args.end is None:
         comp = open(args.script).read()
-        m = re.match(r'RenderRange\s*=\s*\{\s*(\d+),\s*(\d+)\s*\}', comp)
+        m = re.search(r'''
+            RenderRange\s*=\s*
+            \{\s*
+                (\d+)\s*,\s*
+                (\d+)\s*
+            \}''', comp, flags=re.VERBOSE)
         if not m:
             print("Could not parse RenderRange from {}.".format(args.script), file=sys.stderr)
             exit(1)
@@ -45,7 +50,7 @@ def render_main():
         '-start', '@F',
         '-end', '@F_end',
     ])
-    job.expand_via_rane('F={}-{}/{}'.format(args.start, args.end, args.chunk))
+    job.expand_via_range('F={}-{}/{}'.format(args.start, args.end, args.chunk))
 
     group = client.submit(
         name=args.name,
@@ -53,4 +58,3 @@ def render_main():
     )
 
     print(group.id)
-    
