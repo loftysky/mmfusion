@@ -42,6 +42,7 @@ def submit_main():
     client = Client()
     job = client.job(
         name=args.name,
+        reservations={'fusion': 1},
     ).setup_as_subprocess([
         'xvfb-run', '-s' '-screen 0 640x480x24',
         '/opt/BlackmagicDesign/FusionRenderNode9/FusionRenderNode',
