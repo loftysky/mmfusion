@@ -19,6 +19,8 @@ setup(
             mmfusion-submit-render = mmfusion.render:submit_main
             mmfusion-fix-pathmap = mmfusion.pathmap:fix_main
 
+            fusion = mmfusion.launcher:main
+            
         ''',
     },
     

@@ -1,0 +1,11 @@
+{
+    Locked = true,
+    Global = {
+        Paths = {
+            Map = {
+                -- ["UserPaths:"] = "$(MMFUSION);UserData:;AllData:;Fusion:",
+                ["Fuses:"] = "$(MMFUSION)/Fuses;UserPaths:Fuses",
+            },
+        },
+    },
+}
