@@ -45,7 +45,7 @@ def submit_main():
         reservations={'fusion': 1},
     ).setup_as_subprocess([
         'fusion', '--assert-mm',
-        args.script,
+        os.path.abspath(args.script),
         '-render',
         '-start', '@F',
         '-end', '@F_end',
