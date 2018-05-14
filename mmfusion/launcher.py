@@ -43,4 +43,4 @@ def main():
 
     env = os.environ.copy()
     env.update(env_diff)
-    os.execve(exec_args[0], exec_args, env)
+    os.execvpe(exec_args[0], exec_args, env)
