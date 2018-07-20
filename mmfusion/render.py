@@ -13,6 +13,7 @@ def submit_main():
     parser.add_argument('-s', '--start', type=int)
     parser.add_argument('-e', '--end', type=int)
     parser.add_argument('-c', '--chunk', type=int, default=5)
+    parser.add_argument('-r', '--license-retries', type=int, default=0)
     parser.add_argument('script')
     args = parser.parse_args()
 
@@ -46,6 +47,7 @@ def submit_main():
     ).setup_as_subprocess([
         'fusion', '--assert-mm',
         os.path.abspath(args.script),
+        '--license-retries', str(args.license_retries),
         '-render',
         '-start', '@F',
         '-end', '@F_end',

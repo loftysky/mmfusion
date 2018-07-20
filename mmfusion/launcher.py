@@ -2,13 +2,19 @@ from __future__ import print_function
 
 import argparse
 import os
+import random
+import subprocess
 import sys
+import time
+
 
 def main():
 
     parser = argparse.ArgumentParser()
     parser.add_argument('-V', '--version', default=9)
     parser.add_argument('--render', '-render', action='store_true')
+    parser.add_argument('--license-retries', type=int, default=0, metavar='NUM',
+        help="Skip default behaviour of retrying command on license failures.")
     parser.add_argument('--assert-mm', action='store_true', help=argparse.SUPPRESS) # For the render script.
     args, unknown = parser.parse_known_args()
 
@@ -43,4 +49,49 @@ def main():
 
     env = os.environ.copy()
     env.update(env_diff)
-    os.execvpe(exec_args[0], exec_args, env)
+
+    # Simple stuff we simply exec.
+    if not args.render or not args.license_retries:
+        os.execvpe(exec_args[0], exec_args, env)
+
+    # We check for common licensing problems, and just ignore them.
+    retries = args.license_retries
+    while True:
+
+        completed_successfully = False
+        missing_license_server = False
+
+        proc = subprocess.Popen(exec_args, env=env, stdout=subprocess.PIPE, bufsize=1)
+
+        for line in proc.stdout:
+            if line.startswith('Render completed successfully'):
+                completed_successfully = True
+            elif line.startswith('Cannot locate license server'):
+                missing_license_server = True
+
+            sys.stdout.write(line)
+            sys.stdout.flush()
+
+        code = proc.returncode
+
+        # We only care if there was an error AND we were missing the license server.
+        if not code or not missing_license_server:
+            exit(code)
+
+        if completed_successfully:
+            print("[mmfusion]: Ignoring exit code {} due to reported success.".format(code), file=sys.stderr)
+            exit(0)
+
+        if not retries:
+            print("[mmfusion] No more retries.", file=sys.stderr)
+            exit(code)
+
+        delay = 5 * random.random()
+        print("[mmfusion] Failed with code {} due to license failure. Retrying in {:.1f}s. {} retries left.".format(
+            code, delay, retries), file=sys.stderr)
+        retries -= 1
+        time.sleep(delay)
+
+
+if __name__ == '__main__':
+    main()
