@@ -43,7 +43,9 @@ def submit_main():
     client = Client()
     job = client.job(
         name=args.name,
-        reservations={'fusion': 1},
+        reservations={
+            'fusion.install': 1,
+        },
     ).setup_as_subprocess([
         'fusion', '--assert-mm',
         os.path.abspath(args.script),
